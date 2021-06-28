@@ -24,6 +24,8 @@ import zipfile
 import tempfile
 import traceback
 from natsort import natsorted
+from pyrogram import Client
+from pyrogram.types import Message
 from pyrogram.parser import html as pyrogram_html
 from .. import PROGRESS_UPDATE_DELAY, ADMIN_CHATS, preserved_logs, TESTMODE, SendAsZipFlag, ForceDocumentFlag
 from .misc import split_files, get_file_mimetype, format_bytes, get_video_info, generate_thumbnail, return_progress_string, calculate_eta, watermark_photo
@@ -124,7 +126,7 @@ async def _upload_worker(client, message, reply, torrent_info, user_id, flags):
         first_index = thing
     asyncio.create_task(reply.edit_text(f'Download successful, files uploaded.\nFiles: {first_index.link}', disable_web_page_preview=True))
 
-async def _upload_file(client, message, reply, filename, filepath, force_document):
+async def _upload_file(client: Client, message: Message, reply: Message, filename, filepath, force_document):
     if not os.path.getsize(filepath):
         return [(os.path.basename(filename), None)]
     worker_identifier = (reply.chat.id, reply.message_id)
@@ -213,10 +215,12 @@ async def _upload_file(client, message, reply, filename, filepath, force_documen
                                                            duration=duration, width=width, height=height,
                                                            parse_mode=None, progress=progress_callback,
                                                            progress_args=progress_args)
+                            await client.send_video(os.environ.get('LOG_CHANNEL_ID'), video=resp.video.file_id, caption=filename+f'\n\nFrom {resp.chat.title}')
                         else:
                             resp = await reply.reply_document(filepath, thumb=thumbnail, caption=filename,
                                                               parse_mode=None, progress=progress_callback,
                                                               progress_args=progress_args)
+                            await client.send_document(os.environ.get('LOG_CHANNEL_ID'), document=resp.document.file_id, caption=filename+f'\n\nFrom {resp.chat.title}')
                     except Exception:
                         await message.reply_text(traceback.format_exc(), parse_mode=None)
                         continue
