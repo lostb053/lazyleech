@@ -44,13 +44,13 @@ def post_to_telegraph(a_title: str, content: str) -> str:
     return post_page["url"]
 
 
-@Client.on_message(filters.command('mediainfo') & filters.chat(ALL_CHATS))
+@Client.on_message(filters.command('minfo@Mitsuri_Kanroji_Leech_Bot') & filters.chat(ALL_CHATS))
 async def mediainfo(client, message):
     reply = message.reply_to_message
     if not reply:
-        await message.reply_text("Reply to Media first")
+        await message.reply_text("<b>Don't You Dare To Play With Me, \nOr Esle You'll ........</b>")
         return
-    process = await message.reply_text("<b>Processing..</b>")
+    process = await message.reply_text("<b>I Am Casting My Secret Spell \nHold On For A Minute!</b>")
     x_media = None
     available_media = (
         "audio",
@@ -68,7 +68,7 @@ async def mediainfo(client, message):
         if x_media is not None:
             break
     if x_media is None:
-       await process.edit_text("Reply To a Valid Media Format")
+       await process.edit_text("<b>Don't You Dare To Play With Me, \nOr Esle You'll ........</b>")
        return
     media_type = str(type(x_media)).split("'")[1]
     file_path = safe_filename(await reply.download())
@@ -86,4 +86,4 @@ async def mediainfo(client, message):
     text_ = media_type.split(".")[-1].upper()
     link = post_to_telegraph(media_type, body_text)
     markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=text_, url=link)]])
-    await process.edit_text("✨ <b>MEDIA INFO</b>", reply_markup=markup)
+    await process.edit_text("<b>I Am Casting My Secret Spell \nHold On For A Minute!</b>", reply_markup=markup)
